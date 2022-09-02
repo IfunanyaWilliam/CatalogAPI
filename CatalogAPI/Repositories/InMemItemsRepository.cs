@@ -3,6 +3,7 @@ using CatalogAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CatalogAPI.Repositories
 {
@@ -16,14 +17,32 @@ namespace CatalogAPI.Repositories
         };
 
 
-        public IEnumerable<Item> GetItems()
+        public async Task<IEnumerable<Item>> GetItemsAsync()
         {
-            return Items;
+            return await Task.FromResult(Items);
         }
 
-        public Item GetItem(Guid id)
+        public async Task<Item> GetItemAsync(Guid id)
         {
-            return Items.Where(item => item.Id == id).SingleOrDefault();
+            var item =  Items.Where(item => item.Id == id).SingleOrDefault();
+            return await Task.FromResult(item);
+        }
+
+        public async Task CreateItemAsync(Item item)
+        {
+            await Task.Run(() => Items.Add(item));
+        }
+
+        public async Task UpdateItemAsync(Item item)
+        {
+            var index = await Task.Run(() => Items.FindIndex(existingItem => existingItem.Id == item.Id));
+            Items[index] = item;
+        }
+
+        public async Task DeleteItemAsync(Guid id)
+        {
+            var index = Items.FindIndex(existingItem => existingItem.Id == id);
+            await Task.Run(() => Items.RemoveAt(index));
         }
     }
 }

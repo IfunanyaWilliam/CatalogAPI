@@ -1,5 +1,6 @@
 ﻿using CatalogAPI.Contracts;
 using CatalogAPI.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace CatalogAPI.Repositories
         {
             var filter = filterBuilder.Eq(item => item.Id, id);
             await itemsCollection.DeleteOneAsync(filter);
-        }
+        } 
 
         public async  Task<Item> GetItemAsync(Guid id)
         {
@@ -40,7 +41,7 @@ namespace CatalogAPI.Repositories
 
         public async Task<IEnumerable<Item>> GetItemsAsync()
         {
-            throw new NotImplementedException();
+            return await itemsCollection.Find(new BsonDocument()).ToListAsync();
         }
 
         public async Task UpdateItemAsync(Item item)

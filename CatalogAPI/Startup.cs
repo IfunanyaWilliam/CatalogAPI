@@ -34,7 +34,7 @@ namespace CatalogAPI
         public void ConfigureServices(IServiceCollection services)
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            BsonSerializer.RegisterSerializer(new DateTimeSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
 
             services.AddSingleton<IMongoClient>(ServiceProvider =>
             {
@@ -43,6 +43,7 @@ namespace CatalogAPI
             });
 
             services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
+            //services.AddSingleton<IItemsRepository, InMemItemsRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

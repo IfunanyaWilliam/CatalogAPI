@@ -31,6 +31,8 @@ namespace CatalogAPI.Repositories
         public async Task CreateItemAsync(Item item)
         {
             await Task.Run(() => Items.Add(item));
+            //var toReturn = item;
+            //return await Task.FromResult(toReturn);
         }
 
         public async Task UpdateItemAsync(Item item)

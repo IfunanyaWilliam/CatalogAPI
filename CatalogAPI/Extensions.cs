@@ -11,6 +11,7 @@ namespace CatalogAPI
             {
                 Id = item.Id,
                 Name = item.Name,
+                Description = item.Description,
                 Price = item.Price,
                 CreatedDate = item.CreatedDate,
             };

@@ -1,13 +1,14 @@
-﻿using CatalogAPI.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using CatalogAPI.Contracts;
 using CatalogAPI.DTOs;
 using CatalogAPI.Entities;
 using CatalogAPI.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace CatalogAPI.Controllers
 {
@@ -17,22 +18,22 @@ namespace CatalogAPI.Controllers
     {
         private readonly IItemsRepository _repository;
 
-        public ItemsController(IItemsRepository repository)
+        public ItemsController(IItemsRepository repository) 
         {
             _repository = repository;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ItemDto>> GetItems()
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync()
         {
-            var items = await _repository.GetItemsAsync();
+            var items = await _repository.GetAllItemsAsync();
             var itemsDTOs = items.Select(item => item.AsDto());
             return itemsDTOs;
         }
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<ItemDto>> GetItem(Guid id)
+        public async Task<ActionResult<ItemDto>> GetItemByIdAsync(Guid id)
         {
             var item = await _repository.GetItemAsync(id);
 
@@ -44,11 +45,10 @@ namespace CatalogAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<ItemDto>> CreateItem(CreateItemDto itemDto)
+        public async Task<ActionResult<ItemDto>> CreateItemAsync(CreateItemDto itemDto)
         {
             Item item = new Item
             {
-                Id          = Guid.NewGuid(),
                 Name        = itemDto.Name,
                 Price       = itemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow
@@ -56,11 +56,11 @@ namespace CatalogAPI.Controllers
 
             await _repository.CreateItemAsync(item);
 
-            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item.AsDto());
+            return CreatedAtAction(nameof(GetItemByIdAsync), new { id = item.Id }, item.AsDto());
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateItem(Guid id, UpdateItemDto itemDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateItemAsync(Guid id, UpdateItemDto itemDto)
         {
             var existingItem = await _repository.GetItemAsync(id);
 
@@ -81,7 +81,7 @@ namespace CatalogAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteItem(Guid id)
+        public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
             var existingItem = await _repository.GetItemAsync(id);
 

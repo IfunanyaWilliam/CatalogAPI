@@ -42,9 +42,13 @@ namespace CatalogAPI
                 return new MongoClient(settings.ConnectionString);
             });
 
-            services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
+            services.AddSingleton<IItemsRepository, ItemsRepository>();
             //services.AddSingleton<IItemsRepository, InMemItemsRepository>();
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.SuppressAsyncSuffixInActionNames = false; //prevents AsyncSuffix removal in runtime
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });

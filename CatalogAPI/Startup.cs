@@ -23,6 +23,8 @@ namespace CatalogAPI
 {
     public class Startup
     {
+        private ServiceSettings serviceSettings;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,17 +35,22 @@ namespace CatalogAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));            //Displays Guid type as a string
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));  //Displays datatime as string
 
-            services.AddSingleton<IMongoClient>(ServiceProvider =>
+
+            serviceSettings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
+
+            //Add MongoClient 
+            services.AddSingleton(ServiceProvider =>
             {
-                var settings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-                return new MongoClient(settings.ConnectionString);
+                var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+                var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
+                return mongoClient.GetDatabase(serviceSettings.ServiceName);
             });
 
             services.AddSingleton<IItemsRepository, ItemsRepository>();
-            //services.AddSingleton<IItemsRepository, InMemItemsRepository>();
+
             services.AddControllers(options =>
             {
                 options.SuppressAsyncSuffixInActionNames = false; //prevents AsyncSuffix removal in runtime

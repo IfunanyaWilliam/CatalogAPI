@@ -10,16 +10,13 @@ namespace CatalogAPI.Repositories
 {
     public class ItemsRepository : IItemsRepository
     {
-        private const string databaseName = "Catalog";
         private const string collectionName = "items";
         private readonly IMongoCollection<Item> dbCollection;
 
         private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
 
-        public ItemsRepository()
+        public ItemsRepository(IMongoDatabase database)
         {
-            var mongoClient = new MongoClient("mongodb://localhost:27017");
-            IMongoDatabase database = mongoClient.GetDatabase(databaseName);
             dbCollection = database.GetCollection<Item>(collectionName);
         }
 

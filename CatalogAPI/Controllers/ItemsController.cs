@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using CatalogAPI.Contracts;
 using CatalogAPI.DTOs;
 using CatalogAPI.Entities;
 using CatalogAPI.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+
 
 
 namespace CatalogAPI.Controllers
@@ -50,6 +51,7 @@ namespace CatalogAPI.Controllers
             Item item = new Item
             {
                 Name        = itemDto.Name,
+                Description = itemDto.Description,
                 Price       = itemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow
             };
@@ -69,13 +71,11 @@ namespace CatalogAPI.Controllers
                 return NotFound();
             }
 
-            Item updatedItem = existingItem with
-            {
-                Name    = itemDto.Name,
-                Price   = itemDto.Price
-            };
+            existingItem.Name = itemDto.Name;
+            existingItem.Description = itemDto.Description;
+            existingItem.Price = itemDto.Price;
 
-            await _repository.UpdateItemAsync(updatedItem);
+            await _repository.UpdateItemAsync(existingItem);
 
             return NoContent();
         }
@@ -83,9 +83,9 @@ namespace CatalogAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
-            var existingItem = await _repository.GetItemAsync(id);
+            var item = await _repository.GetItemAsync(id);
 
-            if (existingItem == null)
+            if (item == null)
             {
                 return NotFound();
             }

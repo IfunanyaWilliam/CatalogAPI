@@ -1,4 +1,5 @@
 using CatalogAPI.Contracts;
+using CatalogAPI.Entities;
 using CatalogAPI.Repositories;
 using CatalogAPI.Settings;
 using Microsoft.AspNetCore.Builder;
@@ -8,16 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CatalogAPI
 {
@@ -49,7 +45,12 @@ namespace CatalogAPI
                 return mongoClient.GetDatabase(serviceSettings.ServiceName);
             });
 
-            services.AddSingleton<IItemsRepository, ItemsRepository>();
+            //Inject MongoRespository in service container
+            services.AddSingleton<IRepository<Item>>(ServiceProvider => 
+            {
+                var database = ServiceProvider.GetService<IMongoDatabase>(); 
+                return new MongoRepository<Item>(database, "items");    
+            });
 
             services.AddControllers(options =>
             {

@@ -2,7 +2,7 @@
 
 namespace CatalogAPI.Entities
 {
-    public record Item
+    public class Item : IEntity
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

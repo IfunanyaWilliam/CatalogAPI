@@ -2,7 +2,7 @@
 
 namespace CatalogAPI.DTOs
 {
-    public record CreateItemDto
+    public class CreateItemDto
     {
         [Required]
         public string Name { get; set; }

@@ -8,30 +8,29 @@ using System.Threading.Tasks;
 
 namespace CatalogAPI.Repositories
 {
-    public class ItemsRepository : IItemsRepository
+    public class MongoRepository<T> : IRepository<T> where T : IEntity
     {
-        private const string collectionName = "items";
-        private readonly IMongoCollection<Item> dbCollection;
+        private readonly IMongoCollection<T> dbCollection;
 
-        private readonly FilterDefinitionBuilder<Item> filterBuilder = Builders<Item>.Filter;
+        private readonly FilterDefinitionBuilder<T> filterBuilder = Builders<T>.Filter;
 
-        public ItemsRepository(IMongoDatabase database)
+        public MongoRepository(IMongoDatabase database, string collectionName)
         {
-            dbCollection = database.GetCollection<Item>(collectionName);
+            dbCollection = database.GetCollection<T>(collectionName);
         }
 
-        public async Task<IReadOnlyCollection<Item>> GetAllItemsAsync()
+        public async Task<IReadOnlyCollection<T>> GetAllItemsAsync()
         {
             return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
         }
 
-        public async Task<Item> GetItemAsync(Guid id)
+        public async Task<T> GetItemAsync(Guid id)
         {
-            FilterDefinition<Item> filter = filterBuilder.Eq(item => item.Id, id);
+            FilterDefinition<T> filter = filterBuilder.Eq(item => item.Id, id);
             return await dbCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public async Task CreateItemAsync(Item item)
+        public async Task CreateItemAsync(T item)
         {
             if(item == null)
             {
@@ -41,7 +40,7 @@ namespace CatalogAPI.Repositories
             await dbCollection.InsertOneAsync(item);
         }
 
-        public async Task UpdateItemAsync(Item item)
+        public async Task UpdateItemAsync(T item)
         {
             if (item == null)
             {

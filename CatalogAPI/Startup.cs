@@ -31,26 +31,11 @@ namespace CatalogAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));            //Displays Guid type as a string
-            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));  //Displays datatime as string
-
-
             serviceSettings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 
-            //Add MongoClient 
-            services.AddSingleton(ServiceProvider =>
-            {
-                var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-                var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-                return mongoClient.GetDatabase(serviceSettings.ServiceName);
-            });
-
-            //Inject MongoRespository in service container
-            services.AddSingleton<IRepository<Item>>(ServiceProvider => 
-            {
-                var database = ServiceProvider.GetService<IMongoDatabase>(); 
-                return new MongoRepository<Item>(database, "items");    
-            });
+            //Add MongoClient and MongoRepository in a fluent style 
+            services.AddMongo()
+               .AddMongoRepository<Item>("items");
 
             services.AddControllers(options =>
             {

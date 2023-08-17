@@ -1,7 +1,6 @@
-using CatalogAPI.Contracts;
+using Catalog.Common.MongoDB;
+using Catalog.Common.Settings;
 using CatalogAPI.Entities;
-using CatalogAPI.Repositories;
-using CatalogAPI.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,10 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Driver;
 
 namespace CatalogAPI
 {

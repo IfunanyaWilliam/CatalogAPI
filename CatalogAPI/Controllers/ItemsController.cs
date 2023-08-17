@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using CatalogAPI.Contracts;
 using CatalogAPI.DTOs;
 using CatalogAPI.Entities;
-using CatalogAPI.Repositories;
+using Catalog.Common;
 
 
 
@@ -27,7 +26,7 @@ namespace CatalogAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<ItemDto>> GetItemsAsync()
         {
-            var items = await _repository.GetAllItemsAsync();
+            var items = await _repository.GetAllAsync();
             var itemsDTOs = items.Select(item => item.AsDto());
             return itemsDTOs;
         }
@@ -36,7 +35,7 @@ namespace CatalogAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetItemByIdAsync(Guid id)
         {
-            var item = await _repository.GetItemAsync(id);
+            var item = await _repository.GetAsync(id);
 
             if(item == null)
             {
@@ -56,7 +55,7 @@ namespace CatalogAPI.Controllers
                 CreatedDate = DateTimeOffset.UtcNow
             };
 
-            await _repository.CreateItemAsync(item);
+            await _repository.CreateAsync(item);
 
             return CreatedAtAction(nameof(GetItemByIdAsync), new { id = item.Id }, item.AsDto());
         }
@@ -64,7 +63,7 @@ namespace CatalogAPI.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateItemAsync(Guid id, UpdateItemDto itemDto)
         {
-            var existingItem = await _repository.GetItemAsync(id);
+            var existingItem = await _repository.GetAsync(id);
 
             if(existingItem == null)
             {
@@ -75,7 +74,7 @@ namespace CatalogAPI.Controllers
             existingItem.Description = itemDto.Description;
             existingItem.Price = itemDto.Price;
 
-            await _repository.UpdateItemAsync(existingItem);
+            await _repository.UpdateAsync(existingItem);
 
             return NoContent();
         }
@@ -83,14 +82,14 @@ namespace CatalogAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteItemAsync(Guid id)
         {
-            var item = await _repository.GetItemAsync(id);
+            var item = await _repository.GetAsync(id);
 
             if (item == null)
             {
                 return NotFound();
             }
 
-            await _repository.DeleteItemAsync(id);
+            await _repository.DeleteAsync(id);
 
             return NoContent();
 

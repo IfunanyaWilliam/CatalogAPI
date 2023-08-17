@@ -1,4 +1,5 @@
 ﻿using System;
+using Catalog.Common;
 
 namespace CatalogAPI.Entities
 {

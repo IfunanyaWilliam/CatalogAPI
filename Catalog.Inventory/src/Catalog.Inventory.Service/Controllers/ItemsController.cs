@@ -32,5 +32,22 @@ namespace Catalog.Inventory.Service.Controllers
 
             return Ok(items);
         }
+
+        public async Task<ActionResult> PostAsync(GrantItemsDto grantItemsDto)
+        {
+            var inventoryItem = await itemsRepository
+                        .GetAsync(item => item.UserId == grantItemsDto.ItemId && item.CatalogItemId);
+
+            if(inventoryItem == null)
+            {
+                inventoryItem = new InventoryItem
+                {
+                    CatalogItemId = grantItemsDto.CatalogItemId,
+                    UserId = grantItemsDto.UserId,
+                    Quantity = grantItemsDto.Quantity,
+                    AcquiredDate = DateTimeOffset.UtcNow
+                }
+            }
+        }
     }   
 }

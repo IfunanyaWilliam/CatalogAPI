@@ -1,7 +1,0 @@
-{
-    "dotnet.defaultSolution": "src/Catalog.Inventory.Service/Catalog.Inventory.Service.sln",
-    "launch": {
-        "configurations": [],
-        "compounds": []
-    }
-}

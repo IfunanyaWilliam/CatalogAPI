@@ -1,6 +1,8 @@
 using Catalog.Common.MongoDB;
 using Catalog.Common.Settings;
 using CatalogAPI.Entities;
+using CatalogAPI.Settings;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,6 +33,18 @@ namespace CatalogAPI
             //Add MongoClient and MongoRepository in a fluent style 
             services.AddMongo()
                .AddMongoRepository<Item>("items");
+
+            //Add MassTransit
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, configurator) =>
+                {
+                    var rabbitMQSettings = Configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
+                    configurator.Host(rabbitMQSettings.Host);
+                    configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
+                });
+            });
+
 
             services.AddControllers(options =>
             {
